@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -30,6 +31,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.saveapp.R;
+import com.example.saveapp.face.Base64Util;
+import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
+import com.example.saveapp.face.faceBase.FaceAdd;
 import com.google.android.cameraview.CameraView;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
@@ -50,10 +54,12 @@ public class TakePhotoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
+        Log.i("LockService", "onCreate: ");
         requestPermission();
     }
-    public static void start(Context context){
-        Intent intent=new Intent(context,TakePhotoActivity.class);
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, TakePhotoActivity.class);
         context.startActivity(intent);
     }
 
@@ -88,7 +94,7 @@ public class TakePhotoActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mCameraView!=null){
+                if (mCameraView != null) {
                     mCameraView.takePicture();
                 }
             }
@@ -120,33 +126,58 @@ public class TakePhotoActivity extends AppCompatActivity {
 
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data) {
-            Toast.makeText(cameraView.getContext(), "拍照成功", Toast.LENGTH_SHORT)
-                    .show();
-            getBackgroundHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                            "picture.jpg");
-                    OutputStream os = null;
-                    try {
-                        os = new FileOutputStream(file);
-                        os.write(data);
-                        os.close();
-                    } catch (IOException e) {
-                        Log.w(TAG, "Cannot write to " + file, e);
-                    } finally {
-                        if (os != null) {
-                            try {
-                                os.close();
-                            } catch (IOException e) {
-                                // Ignore
-                            }
+            Toast.makeText(cameraView.getContext(), "拍照成功", Toast.LENGTH_SHORT).show();
+//            savePhoto(data);
+            checkAlive(data);
+        }
+    };
+
+    private void checkAlive(byte[] data) {
+        final String image = Base64Util.encode(data);
+        final String phone = "15816221326";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean right = FaceVerify.isverify(image, "BASE64");
+                if (right) {
+                    Log.i(TAG, "succeed: ");
+//                    boolean right2 = FaceAdd.isadd(image, "sign", phone);
+//                    if (right2) {
+//                    } else {
+//                    }
+                } else {
+                    Log.i(TAG, "failed: ");
+                }
+            }
+        }).start();
+
+    }
+
+    private void savePhoto(final byte[] data) {
+        getBackgroundHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                        "picture.jpg");
+                OutputStream os = null;
+                try {
+                    os = new FileOutputStream(file);
+                    os.write(data);
+                    os.close();
+                } catch (IOException e) {
+                    Log.w(TAG, "Cannot write to " + file, e);
+                } finally {
+                    if (os != null) {
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            // Ignore
                         }
                     }
                 }
-            });
-        }
-    };
+            }
+        });
+    }
 
     @Override
     protected void onPause() {

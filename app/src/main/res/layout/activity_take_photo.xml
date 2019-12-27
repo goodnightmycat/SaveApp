@@ -15,7 +15,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@android:color/black"
-        android:visibility="invisible"
         />
     <TextView
         android:id="@+id/take_picture"
