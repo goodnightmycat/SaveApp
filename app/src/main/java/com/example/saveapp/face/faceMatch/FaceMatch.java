@@ -2,7 +2,7 @@ package com.example.saveapp.face.faceMatch;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.example.saveapp.face.HttpUtil;
+import com.example.saveapp.util.HttpUtil;
 
 import java.util.ArrayList;
 import java.util.List;

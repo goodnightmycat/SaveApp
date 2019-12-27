@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -31,9 +30,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.saveapp.R;
-import com.example.saveapp.face.Base64Util;
+import com.example.saveapp.util.Base64Util;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
-import com.example.saveapp.face.faceBase.FaceAdd;
 import com.google.android.cameraview.CameraView;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;

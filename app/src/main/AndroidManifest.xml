@@ -11,10 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.LockActivity"></activity>
+        <activity android:name=".activity.LockActivity" />
+        <activity android:name=".activity.FindActivity"/>
+
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login" />
+
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,10 +27,17 @@
         </activity>
         <activity android:name=".activity.LocationActivity" />
         <activity android:name=".activity.TakePhotoActivity" />
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="sQx3THNNdMcW5L45XRIEAEDBdcHxS3pz" />
+        <provider
+            android:name="cn.bmob.v3.util.BmobContentProvider"
+            android:authorities="com.example.saveapp.BmobContentProvider" />
+
+        <service
+            android:name=".activity.LocationService"
+            android:enabled="true"
+            android:exported="true"></service>
 
         <service
             android:name="com.baidu.location.f"
@@ -40,12 +50,12 @@
     </application>
     <uses-feature android:name="android.hardware.camera" />
 
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 获取GSM（2g）、WCDMA（联通3g）等网络状态的信息 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 获取wifi网络状态的信息 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 保持CPU 运转，屏幕和键盘灯有可能是关闭的,用于文件上传和下载 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 获取sd卡写的权限，用于文件上传和下载 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 允许读取手机状态 用于创建BmobInstallation -->
+    <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- 获取GSM（2g）、WCDMA（联通3g）等网络状态的信息 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 获取wifi网络状态的信息 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 保持CPU 运转，屏幕和键盘灯有可能是关闭的,用于文件上传和下载 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 获取sd卡写的权限，用于文件上传和下载 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 允许读取手机状态 用于创建BmobInstallation -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -56,6 +66,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="andorid.permission.MONUN_UNMOUNT_FILESYSTEMS"/>
+
+    <uses-permission android:name="andorid.permission.MONUN_UNMOUNT_FILESYSTEMS" />
 
 </manifest>

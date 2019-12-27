@@ -1,8 +1,8 @@
 package com.example.saveapp.face.facGetToken;
 
 import com.alibaba.fastjson.JSON;
-import com.example.saveapp.face.GsonUtils;
-import com.example.saveapp.face.HttpUtil;
+import com.example.saveapp.util.GsonUtils;
+import com.example.saveapp.util.HttpUtil;
 import com.example.saveapp.face.faceMatch.AuthService;
 
 

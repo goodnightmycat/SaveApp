@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.blankj:utilcode:1.23.7'
     implementation 'com.yanzhenjie.permission:support:2.0.1'
     implementation project(path: ':camera')
-//    implementation 'cn.bmob.android:bmob-sdk:3.7.0'
+    implementation 'cn.bmob.android:bmob-sdk:3.7.3-rc1'
     implementation "io.reactivex.rxjava2:rxjava:2.2.2"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'com.squareup.okio:okio:2.1.0'
@@ -46,4 +46,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
     implementation 'com.alibaba:fastjson:1.2.48'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }

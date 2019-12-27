@@ -23,10 +23,11 @@ public class MainActivity extends AppCompatActivity {
         requestPermission();
     }
     private void start(){
-        startService(new Intent(MainActivity.this, LockService.class));
+//        startService(new Intent(MainActivity.this, LockService.class));
 //        TakePhotoActivity.start(MainActivity.this);
 //        LocationActivity.start(MainActivity.this);
-    }
+        FindActivity.start(MainActivity.this);
+}
     public void requestPermission() {
         AndPermission.with(this)
                 .runtime()
