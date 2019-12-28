@@ -17,13 +17,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDir 'libs'
+        }
+    }
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.android.support:design:29.0.0'
     implementation 'androidx.annotation:annotation:1.0.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     testImplementation 'junit:junit:4.12'
@@ -31,5 +37,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.blankj:utilcode:1.23.7'
     implementation 'com.yanzhenjie.permission:support:2.0.1'
-    compile project(path: ':camera')
+    implementation project(path: ':camera')
+    implementation 'cn.bmob.android:bmob-sdk:3.7.3-rc1'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'com.squareup.okio:okio:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+    implementation 'com.alibaba:fastjson:1.2.48'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 }
