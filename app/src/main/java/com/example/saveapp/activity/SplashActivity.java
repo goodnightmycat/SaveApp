@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import com.example.saveapp.R;
+import com.example.saveapp.bean.User;
 
 import cn.bmob.v3.BmobUser;
 

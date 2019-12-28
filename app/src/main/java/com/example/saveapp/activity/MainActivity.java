@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
-        RegisterActivity.start(this);
-//        initFragment();
+//        RegisterActivity.start(this);
+        initFragment();
 //        getAppDetailSettingIntent();
 //        requestPermission();
     }
@@ -89,33 +89,5 @@ public class MainActivity extends AppCompatActivity {
 //        FindActivity.start(MainActivity.this);
     }
 
-    public void requestPermission() {
-        AndPermission.with(this)
-                .runtime()
-                .permission(Permission.READ_EXTERNAL_STORAGE,
-                        Permission.WRITE_EXTERNAL_STORAGE, Permission.CAMERA, Permission.ACCESS_FINE_LOCATION)
-                .onGranted(new Action<List<String>>() {
-                    @Override
-                    public void onAction(List<String> data) {
-                        start();
-                    }
-                })
-                .onDenied(new Action<List<String>>() {
-                    @Override
-                    public void onAction(List<String> data) {
-                        Toast.makeText(MainActivity.this, "没有存储权限", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .start();
-    }
-
-
-    private void getAppDetailSettingIntent() {
-        Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setData(Uri.fromParts("package", getPackageName(), null));
-        intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-        startActivity(intent);
-    }
 
 }

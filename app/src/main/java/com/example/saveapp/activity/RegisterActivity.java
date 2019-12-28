@@ -123,10 +123,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
             @Override
             public void done(User user, BmobException e) {
                 if (e == null) {
-//                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    startActivity(intent);
-                    Toast.makeText(RegisterActivity.this, "success", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+//                    Toast.makeText(RegisterActivity.this, "success", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 

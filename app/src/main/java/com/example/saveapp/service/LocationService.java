@@ -25,11 +25,13 @@ import com.example.saveapp.R;
 import com.example.saveapp.activity.LockActivity;
 import com.example.saveapp.activity.TakePhotoActivity;
 import com.example.saveapp.bean.Position;
+import com.example.saveapp.bean.User;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -57,6 +59,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("LocationService", "onCreate: ");
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
@@ -168,17 +171,18 @@ public class LocationService extends Service {
                 oldLatitude = location.getLatitude();
                 oldLongtitude = location.getLongitude();
                 init = true;
-                Position position = new Position();
-                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
-                position.save(new SaveListener<String>() {
-                    @Override
-                    public void done(String objectId, BmobException e) {
-                        if (e == null) {
-
-                        } else {
-                        }
-                    }
-                });
+//                Position position = new Position();
+//                position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+//                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
+//                position.save(new SaveListener<String>() {
+//                    @Override
+//                    public void done(String objectId, BmobException e) {
+//                        if (e == null) {
+//
+//                        } else {
+//                        }
+//                    }
+//                });
             }
         }
     }

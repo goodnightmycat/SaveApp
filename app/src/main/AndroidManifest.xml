@@ -18,7 +18,7 @@
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login" />
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,7 +35,7 @@
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.LoginByPasswordActivity" />
         <activity android:name=".activity.LoginBySMSActivity" />
-        <activity android:name=".activity.SplashActivity" />
+        <activity android:name=".activity.MainActivity" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"

@@ -3,22 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <!-- TODO: Update blank fragment layout -->
-    <ListView
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/listview">
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:textSize="24sp"
+        android:text="用户名"
+        android:gravity="center_vertical"
+        android:id="@+id/fragment_set_name"
+        android:layout_marginLeft="15dp" />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="24sp"
+        android:text="******"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/fragment_set_password"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="24sp"
+        android:text="用户名"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/fragment_set_phone"/>
 
-    </ListView>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="    退出当前账号"
-        android:textSize="16sp"
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:text="退出当前账号"
+        android:textSize="24sp"
         android:layout_gravity="bottom"
         android:background="#00000000"
-        android:id="@+id/logoutBtn"/>
+        android:id="@+id/fragment_set_logout"/>
 
 </LinearLayout>

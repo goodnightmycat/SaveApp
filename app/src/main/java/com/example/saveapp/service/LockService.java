@@ -39,11 +39,13 @@ public class LockService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         lockreceiver = new LockReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         //注册观察者
         registerReceiver(lockreceiver, filter);
+        Log.d("LocationService", "onCreate: ");
     }
 
     @Override

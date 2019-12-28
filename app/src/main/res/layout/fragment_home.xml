@@ -4,20 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <TextView
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
         android:id="@+id/fragment_home_open"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:text="打开安全模式"
-        android:textSize="25sp"/>
+        android:textSize="24sp"/>
     <TextView
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/fragment_home_find"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:text="手机找回"
-        android:textSize="25sp"/>
-
+        android:layout_marginLeft="15dp"
+        android:textSize="24sp"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/fragment_home_grant"
+        android:gravity="center_vertical"
+        android:text="获取屏锁显示权限"
+        android:layout_marginLeft="15dp"
+        android:textSize="24sp"/>
 </LinearLayout>
