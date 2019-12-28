@@ -58,7 +58,6 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
 
-
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }

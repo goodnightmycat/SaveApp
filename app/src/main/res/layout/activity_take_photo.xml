@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity"
-    android:orientation="vertical"
-    android:background="#000000">
+    android:orientation="vertical">
 
     <com.google.android.cameraview.CameraView
         android:id="@+id/camera"
@@ -21,20 +20,10 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:gravity="center"
-        android:background="@android:color/black"
         android:layout_gravity="center_horizontal"
         android:textSize="20sp"
         android:textColor="#ffffff"
         android:text="拍照"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textSize="25sp"
-        android:textColor="#fb4204"
-        android:text="你已经被拍照报警，请归还手机，"/>
-
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

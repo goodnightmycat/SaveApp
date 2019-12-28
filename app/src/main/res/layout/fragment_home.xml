@@ -3,11 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ListView
-        android:id="@+id/page_list_view"
+    <TextView
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9">
-    </ListView>
+        android:layout_height="50dp"
+        android:id="@+id/fragment_home_open"
+        android:gravity="center"
+        android:text="打开安全模式"
+        android:textSize="25sp"/>
+    <TextView
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/fragment_home_find"
+        android:gravity="center"
+        android:text="手机找回"
+        android:textSize="25sp"/>
 
 </LinearLayout>

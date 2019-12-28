@@ -30,7 +30,6 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.saveapp.R;
 import com.example.saveapp.face.faceBase.FaceAdd;
@@ -41,16 +40,15 @@ import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 public class TakePhotoActivity extends Activity {
     private CameraView mCameraView;
     private static final String TAG = "TakePhotoActivity";
     private Handler mBackgroundHandler;
+    private String mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +57,13 @@ public class TakePhotoActivity extends Activity {
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.activity_take_photo);
         Log.i("LockService", "onCreate: ");
+        mUserName=getIntent().getStringExtra("userName");
         requestPermission();
     }
 
-    public static void start(Context context) {
+    public static void start(Context context,String userName) {
         Intent intent = new Intent(context, TakePhotoActivity.class);
+        intent.putExtra("userName",userName);
         context.startActivity(intent);
     }
 
@@ -138,15 +138,15 @@ public class TakePhotoActivity extends Activity {
 
     private void checkAlive(byte[] data) {
         final String image = Base64Util.encode(data);
-        final String phone = "15816221326";
         new Thread(new Runnable() {
             @Override
             public void run() {
                 boolean right = FaceVerify.isverify(image, "BASE64");
                 if (right) {
                     Log.i(TAG, "succeed: ");
-                    boolean right2 = FaceAdd.isadd(image, "sign", phone);
+                    boolean right2 = FaceAdd.isadd(image, "sign", mUserName);
                     if (right2) {
+                        EventBus.getDefault().post("add");
                     } else {
                     }
                 } else {
@@ -155,32 +155,6 @@ public class TakePhotoActivity extends Activity {
             }
         }).start();
 
-    }
-
-    private void savePhoto(final byte[] data) {
-        getBackgroundHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                        "picture.jpg");
-                OutputStream os = null;
-                try {
-                    os = new FileOutputStream(file);
-                    os.write(data);
-                    os.close();
-                } catch (IOException e) {
-                    Log.w(TAG, "Cannot write to " + file, e);
-                } finally {
-                    if (os != null) {
-                        try {
-                            os.close();
-                        } catch (IOException e) {
-                            // Ignore
-                        }
-                    }
-                }
-            }
-        });
     }
 
     @Override

@@ -11,7 +11,7 @@
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:alpha="0.5"
         android:background="@null"
         android:drawableLeft="@drawable/user"
@@ -125,27 +125,15 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/bt_setface"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ll_code"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/button_selector"
-        android:drawableRight="@drawable/arrow_right"
-        android:gravity="center"
-        android:text="录入人脸"
-        android:textSize="16sp" />
 
 
     <Button
         android:id="@+id/bt_register"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bt_setface"
+        android:layout_below="@id/ll_code"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/button_selector"
         android:text="注册"
         android:textSize="18sp" />

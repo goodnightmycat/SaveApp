@@ -26,13 +26,14 @@ public class SplashActivity extends Activity {
         initView();
     }
 
-    private void initView(){
+    private void initView() {
         mImgStart = findViewById(R.id.splash);
         initImage();
     }
-    private void initImage(){
 
-            mImgStart.setImageResource(R.drawable.ontime);
+    private void initImage() {
+
+        mImgStart.setImageResource(R.drawable.ontime);
 
         ScaleAnimation scaleAnimation = new ScaleAnimation(
                 0.85f,
@@ -65,18 +66,16 @@ public class SplashActivity extends Activity {
         mImgStart.startAnimation(scaleAnimation);
     }
 
-    private void startActivity(){
+    private void startActivity() {
         Intent intent;
-        if(BmobUser.isLogin()){
-
-        intent = new Intent(SplashActivity.this,MainActivity.class);}
-
-        else
-        {  intent = new Intent(SplashActivity.this,LoginByPasswordActivity.class);
+        if (BmobUser.isLogin()) {
+            intent = new Intent(SplashActivity.this, MainActivity.class);
+        } else {
+            intent = new Intent(SplashActivity.this, LoginByPasswordActivity.class);
         }
-            startActivity(intent);
-            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-            finish();
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        finish();
     }
-    }
+}
 

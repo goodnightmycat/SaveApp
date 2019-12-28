@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
-
-        initFragment();
+        RegisterActivity.start(this);
+//        initFragment();
 //        getAppDetailSettingIntent();
 //        requestPermission();
     }
