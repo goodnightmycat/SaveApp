@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.saveapp.activity.LockActivity;
+import com.example.saveapp.activity.TakePhotoActivity;
 
 public class LockService extends Service {
     private LockReceiver lockreceiver;

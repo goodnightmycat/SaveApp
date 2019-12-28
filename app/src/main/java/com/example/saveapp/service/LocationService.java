@@ -22,10 +22,17 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.saveapp.R;
+import com.example.saveapp.activity.LockActivity;
+import com.example.saveapp.activity.TakePhotoActivity;
+import com.example.saveapp.bean.Position;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import cn.bmob.v3.datatype.BmobGeoPoint;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class LocationService extends Service {
     private LocationClient mLocationClient = null;
@@ -50,6 +57,8 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
@@ -65,17 +74,22 @@ public class LocationService extends Service {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveMessage(String message){
-       if("close".equals(message)){
-           Log.i("1", "receiveMessage: ");
-           mLocationClient.stop();
-       }
+    public void receiveMessage(String message) {
+        if ("close".equals(message)) {
+            Log.i("1", "receiveMessage: ");
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+            mLocationClient.stop();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(EventBus.getDefault().isRegistered(this)){
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
@@ -104,6 +118,7 @@ public class LocationService extends Service {
         option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
         option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
         mLocationClient.setLocOption(option);
+
     }
 
     private void maxVoice() {
@@ -126,6 +141,7 @@ public class LocationService extends Service {
     public class MyLocationListener implements BDLocationListener {
         private double oldLatitude = 0;
         private double oldLongtitude = 0;
+        private boolean init = false;
         private boolean play = false;
 
         @RequiresApi(api = Build.VERSION_CODES.M)
@@ -136,13 +152,9 @@ public class LocationService extends Service {
             LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
             LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
             if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                } else if (play) {
-                    maxVoice();
-                    MediaPlayer mediaPlayer = MediaPlayer.create(LocationService.this, R.raw.police);
+                if (init && !play) {
+//                    maxVoice();
+                    mediaPlayer = MediaPlayer.create(LocationService.this, R.raw.police);
                     mediaPlayer.setLooping(true);
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -150,23 +162,31 @@ public class LocationService extends Service {
                             mediaPlayer.start();
                         }
                     });
-                    oldLatitude = location.getLatitude();
-                    oldLongtitude = location.getLongitude();
-                    Toast.makeText(LocationService.this, "你在干什么？", Toast.LENGTH_LONG).show();
                     play = true;
-//                Position position = new Position();
-//                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
-//                position.save(new SaveListener<String>() {
-//                    @Override
-//                    public void done(String objectId, BmobException e) {
-//                        if (e == null) {
-//
-//                        } else {
-//                        }
-//                    }
-//                });
+                    Toast.makeText(LocationService.this, "你在干什么？", Toast.LENGTH_LONG).show();
+                    startTakePhotoActivity();
                 }
+                oldLatitude = location.getLatitude();
+                oldLongtitude = location.getLongitude();
+                init = true;
+                Position position = new Position();
+                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
+                position.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String objectId, BmobException e) {
+                        if (e == null) {
+
+                        } else {
+                        }
+                    }
+                });
             }
         }
+    }
+
+    private void startTakePhotoActivity() {
+        Intent intent = new Intent(LocationService.this, TakePhotoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        startActivity(intent);
     }
 }

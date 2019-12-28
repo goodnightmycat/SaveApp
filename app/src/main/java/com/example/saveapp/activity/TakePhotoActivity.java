@@ -16,6 +16,7 @@
 
 package com.example.saveapp.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,12 +25,15 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.saveapp.R;
+import com.example.saveapp.face.faceBase.FaceAdd;
 import com.example.saveapp.util.Base64Util;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
 import com.google.android.cameraview.CameraView;
@@ -43,7 +47,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class TakePhotoActivity extends AppCompatActivity {
+public class TakePhotoActivity extends Activity {
     private CameraView mCameraView;
     private static final String TAG = "TakePhotoActivity";
     private Handler mBackgroundHandler;
@@ -51,6 +55,8 @@ public class TakePhotoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.activity_take_photo);
         Log.i("LockService", "onCreate: ");
         requestPermission();
@@ -139,10 +145,10 @@ public class TakePhotoActivity extends AppCompatActivity {
                 boolean right = FaceVerify.isverify(image, "BASE64");
                 if (right) {
                     Log.i(TAG, "succeed: ");
-//                    boolean right2 = FaceAdd.isadd(image, "sign", phone);
-//                    if (right2) {
-//                    } else {
-//                    }
+                    boolean right2 = FaceAdd.isadd(image, "sign", phone);
+                    if (right2) {
+                    } else {
+                    }
                 } else {
                     Log.i(TAG, "failed: ");
                 }

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.LockActivity" />
-        <activity android:name=".activity.FindActivity"/>
+        <activity android:name=".activity.FindActivity" />
 
         <activity
             android:name=".activity.LoginActivity"
@@ -26,11 +26,17 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.LocationActivity" />
-        <activity android:name=".activity.TakePhotoActivity" />
-        <activity android:name=".activity.RegisterActivity"/>
-        <activity android:name=".activity.LoginByPasswordActivity"/>
-        <activity android:name=".activity.LoginBySMSActivity"/>
-        <activity android:name=".activity.SplashActivity"/>
+        <activity
+            android:name=".activity.TakePhotoActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.example.suoping.lockscreen"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.LoginByPasswordActivity" />
+        <activity android:name=".activity.LoginBySMSActivity" />
+        <activity android:name=".activity.SplashActivity" />
+
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="sQx3THNNdMcW5L45XRIEAEDBdcHxS3pz" />
@@ -52,6 +58,7 @@
             android:enabled="true"
             android:exported="true" />
     </application>
+
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- 获取GSM（2g）、WCDMA（联通3g）等网络状态的信息 -->
