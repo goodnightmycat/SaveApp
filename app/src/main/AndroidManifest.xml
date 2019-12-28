@@ -27,6 +27,10 @@
         </activity>
         <activity android:name=".activity.LocationActivity" />
         <activity android:name=".activity.TakePhotoActivity" />
+        <activity android:name=".activity.RegisterActivity"/>
+        <activity android:name=".activity.LoginByPasswordActivity"/>
+        <activity android:name=".activity.LoginBySMSActivity"/>
+        <activity android:name=".activity.SplashActivity"/>
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="sQx3THNNdMcW5L45XRIEAEDBdcHxS3pz" />
@@ -35,7 +39,7 @@
             android:authorities="com.example.saveapp.BmobContentProvider" />
 
         <service
-            android:name=".activity.LocationService"
+            android:name=".service.LocationService"
             android:enabled="true"
             android:exported="true"></service>
 
@@ -44,7 +48,7 @@
             android:enabled="true"
             android:process=":remote" />
         <service
-            android:name=".LockService"
+            android:name=".service.LockService"
             android:enabled="true"
             android:exported="true" />
     </application>
@@ -66,7 +70,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="andorid.permission.MONUN_UNMOUNT_FILESYSTEMS" />
 
 </manifest>

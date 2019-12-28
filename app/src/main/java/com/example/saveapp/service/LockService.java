@@ -1,6 +1,7 @@
-package com.example.saveapp;
+package com.example.saveapp.service;
 
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,7 +10,7 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.saveapp.activity.TakePhotoActivity;
+import com.example.saveapp.activity.LockActivity;
 
 public class LockService extends Service {
     private LockReceiver lockreceiver;
@@ -20,11 +21,15 @@ public class LockService extends Service {
             //状态更新,通知观察者
             if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
                 Log.i("LockService", "onReceive: ");
-                Intent intent1 = new Intent(LockService.this, TakePhotoActivity.class);
+                Intent intent1 = new Intent(LockService.this, LockActivity.class);
                 intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 startActivity(intent1);
             }
         }
+    }
+    public static void start(Activity activity) {
+        Intent intent = new Intent(activity, LockService.class);
+        activity.startService(intent);
     }
 
     //BroadcastReceiver
