@@ -119,6 +119,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         //设置用户名，如果没有传用户名，则默认为手机号码
         user.setUsername(name);
         user.setPassword(password);
+        user.setLockPassword(password);
         user.signOrLogin(code, new SaveListener<User>() {
             @Override
             public void done(User user, BmobException e) {

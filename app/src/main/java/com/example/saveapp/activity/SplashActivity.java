@@ -47,7 +47,7 @@ public class SplashActivity extends Activity {
                 0.5f
         );
         scaleAnimation.setFillAfter(true);
-        scaleAnimation.setDuration(1000);
+        scaleAnimation.setDuration(500);
         scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {

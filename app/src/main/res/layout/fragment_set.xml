@@ -8,7 +8,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:textSize="24sp"
-        android:text="用户名"
+        android:text="用户名："
         android:gravity="center_vertical"
         android:id="@+id/fragment_set_name"
         android:layout_marginLeft="15dp" />
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="24sp"
-        android:text="******"
+        android:text="密码：    ******"
         android:gravity="center_vertical"
         android:layout_marginLeft="15dp"
         android:id="@+id/fragment_set_password"/>
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="24sp"
-        android:text="用户名"
+        android:text="手机号："
         android:gravity="center_vertical"
         android:layout_marginLeft="15dp"
         android:id="@+id/fragment_set_phone"/>

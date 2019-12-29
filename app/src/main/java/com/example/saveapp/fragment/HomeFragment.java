@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.saveapp.R;
 import com.example.saveapp.activity.FindActivity;
-import com.example.saveapp.activity.MainActivity;
 import com.example.saveapp.service.LocationService;
 import com.example.saveapp.service.LockService;
 import com.yanzhenjie.permission.Action;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
-    private boolean hasPermission = false;
+    private int startType;
 
     @Nullable
     @Override
@@ -38,12 +37,8 @@ public class HomeFragment extends Fragment {
         open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (hasPermission) {
-                    LocationService.start(getActivity());
-                    LockService.start(getActivity());
-                } else {
+                    startType=1;
                     requestPermission();
-                }
             }
         });
 
@@ -51,15 +46,13 @@ public class HomeFragment extends Fragment {
         find.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (hasPermission) {
-                    FindActivity.start(getActivity());
-                } else {
+                    startType=2;
                     requestPermission();
-                }
             }
         });
         TextView grant = view.findViewById(R.id.fragment_home_grant);
         grant.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
                 getAppDetailSettingIntent();
@@ -77,7 +70,13 @@ public class HomeFragment extends Fragment {
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> data) {
-                        hasPermission = true;
+                        if(startType==1){
+                            Toast.makeText(getActivity(), "安全模式启动", Toast.LENGTH_SHORT).show();
+                            LocationService.start(getActivity());
+                            LockService.start(getActivity());
+                        } else if(startType==2){
+                            FindActivity.start(getActivity());
+                        }
                     }
                 })
                 .onDenied(new Action<List<String>>() {

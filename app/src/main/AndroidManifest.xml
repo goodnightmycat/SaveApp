@@ -11,7 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.LockActivity" />
+        <activity
+            android:name=".activity.LockActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.example.suoping.lockscreen"
+            android:theme="@android:style/Theme.NoTitleBar" />
         <activity android:name=".activity.FindActivity" />
 
         <activity

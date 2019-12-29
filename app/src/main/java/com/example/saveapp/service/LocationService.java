@@ -85,6 +85,9 @@ public class LocationService extends Service {
                 mediaPlayer = null;
             }
             mLocationClient.stop();
+            Log.d("LocationService", "receiveMessage: ");
+            Toast.makeText(LocationService.this, "安全模式关闭", Toast.LENGTH_LONG).show();
+            stopSelf();
         }
     }
 
@@ -151,6 +154,7 @@ public class LocationService extends Service {
         public void onReceiveLocation(BDLocation location) {
             Log.i("lat", "onReceiveLocation: " + location.getLatitude());
             Log.i("lon", "onReceiveLocation: " + location.getLongitude());
+//            Toast.makeText(LocationService.this, "onReceiveLocation？", Toast.LENGTH_LONG).show();
             LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
             LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
             if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
