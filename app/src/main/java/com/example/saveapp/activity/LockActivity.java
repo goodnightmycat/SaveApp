@@ -67,21 +67,6 @@ public class LockActivity extends Activity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                 User user = new User();
-//                user.setUsername("晓阳");
-//                user.setPassword("qq690297610" );
-//                user.setLockPassword("qq690297610");
-//                user.setMobilePhoneNumber("15521205231");
-//                user.signUp(new SaveListener<User>() {
-//                    @Override
-//                    public void done(User user, BmobException e) {
-//                        if (e == null) {
-//                            Toast.makeText(LockActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            Toast.makeText(LockActivity.this, "注册失败", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
                 String passwordString = password.getText().toString();
                 if (passwordString.equals(BmobUser.getCurrentUser(User.class).getLockPassword())) {
                     finish();
