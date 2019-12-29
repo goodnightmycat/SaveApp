@@ -25,6 +25,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.saveapp.R;
+import com.example.saveapp.bean.Position;
 import com.example.saveapp.bean.User;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
 import com.example.saveapp.face.faceBase.FaceAdd;
@@ -34,6 +35,9 @@ import com.google.android.cameraview.CameraView;
 import org.greenrobot.eventbus.EventBus;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobGeoPoint;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class LockActivity extends Activity {
     private EditText password;
@@ -43,10 +47,12 @@ public class LockActivity extends Activity {
     private BDLocationListener myListener = new LockActivity.MyLocationListener();
     MediaPlayer mediaPlayer;
     private AudioManager audioManager = null; // Audio管理器，用了控制音量
+
     public static void start(Context context) {
         Intent intent = new Intent(context, LockActivity.class);
         context.startActivity(intent);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,17 +84,18 @@ public class LockActivity extends Activity {
 //                });
                 String passwordString = password.getText().toString();
                 if (passwordString.equals(BmobUser.getCurrentUser(User.class).getLockPassword())) {
-                    EventBus.getDefault().post("close");
                     finish();
                 } else {
                     if (mCameraView != null) {
+                        callPolice();
                         mCameraView.takePicture();
                     }
-//                    Toast.makeText(LockActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LockActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
     /**
      * 配置定位参数
      */
@@ -132,6 +139,7 @@ public class LockActivity extends Activity {
             }
         }.start();
     }
+
     public class MyLocationListener implements BDLocationListener {
         private double oldLatitude = 0;
         private double oldLongtitude = 0;
@@ -143,51 +151,71 @@ public class LockActivity extends Activity {
         public void onReceiveLocation(BDLocation location) {
             Log.i("lat", "onReceiveLocation: " + location.getLatitude());
             Log.i("lon", "onReceiveLocation: " + location.getLongitude());
-//            Toast.makeText(LocationService.this, "onReceiveLocation？", Toast.LENGTH_LONG).show();
             LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
             LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
             if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
-                if (!init && !play) {
-                    maxVoice();
-                    mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            mediaPlayer.start();
-                        }
-                    });
+                if (init && !play) {
                     play = true;
+                    callPolice();
+                    autoTakePhoto();
                     Toast.makeText(LockActivity.this, "你在干什么？", Toast.LENGTH_LONG).show();
                 }
                 oldLatitude = location.getLatitude();
                 oldLongtitude = location.getLongitude();
                 init = true;
                 //上传位置信息
-//                Position position = new Position();
-//                position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-//                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
-//                position.save(new SaveListener<String>() {
-//                    @Override
-//                    public void done(String objectId, BmobException e) {
-//                        if (e == null) {
-//
-//                        } else {
-//                        }
-//                    }
-//                });
+                Position position = new Position();
+                position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
+                position.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String objectId, BmobException e) {
+                        if (e == null) {
+
+                        } else {
+                        }
+                    }
+                });
             }
         }
+    }
+
+    private void autoTakePhoto() {
+        new CountDownTimer(Integer.MAX_VALUE, 5000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (mCameraView != null) {
+                    mCameraView.takePicture();
+                }
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+    }
+
+    private void callPolice() {
+        maxVoice();
+        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mediaPlayer!=null){
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        if(mLocationClient!=null){
+        if (mLocationClient != null) {
             mLocationClient.stop();
         }
     }
@@ -222,7 +250,7 @@ public class LockActivity extends Activity {
 
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data) {
-//            Toast.makeText(cameraView.getContext(), "拍照成功", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "onPictureTaken");
             checkAlive(data);
         }
     };
