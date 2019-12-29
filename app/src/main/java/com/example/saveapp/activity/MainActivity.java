@@ -4,34 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.saveapp.fragment.HomeFragment;
 import com.example.saveapp.fragment.SetFragment;
-import com.example.saveapp.service.LocationService;
-import com.example.saveapp.service.LockService;
 import com.example.saveapp.R;
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.runtime.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private int mIndex;
-    private List<Fragment> fragments=new ArrayList<>();
+    private List<Fragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +28,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.hide();
-//        RegisterActivity.start(this);
         initFragment();
-//        getAppDetailSettingIntent();
-//        requestPermission();
     }
 
     private void initFragment() {
@@ -51,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         SetFragment setFragment = new SetFragment();
         fragments.add(homeFragment);
         fragments.add(setFragment);
-        FragmentPagerAdapter fragmentPagerAdapter=new FragmentPagerAdapter(getSupportFragmentManager()) {
+        FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @NonNull
             @Override
             public Fragment getItem(int position) {
@@ -63,30 +48,22 @@ public class MainActivity extends AppCompatActivity {
                 return 2;
             }
         };
-        final ViewPager viewPager=findViewById(R.id.activity_main_viewPager);
+        final ViewPager viewPager = findViewById(R.id.activity_main_viewPager);
         viewPager.setAdapter(fragmentPagerAdapter);
-        TextView homw=findViewById(R.id.activity_main_home);
+        TextView homw = findViewById(R.id.activity_main_home);
         homw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(0);
             }
         });
-        TextView set=findViewById(R.id.activity_main_set);
+        TextView set = findViewById(R.id.activity_main_set);
         set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(1);
             }
         });
-    }
-
-    private void start() {
-//        LocationService.start(MainActivity.this);
-//        LockService.start(this);
-//        TakePhotoActivity.start(MainActivity.this);
-//        LocationActivity.start(MainActivity.this);
-//        FindActivity.start(MainActivity.this);
     }
 
 

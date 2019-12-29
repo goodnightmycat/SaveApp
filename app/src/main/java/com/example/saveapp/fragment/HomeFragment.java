@@ -17,8 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.saveapp.R;
 import com.example.saveapp.activity.FindActivity;
-import com.example.saveapp.service.LocationService;
-import com.example.saveapp.service.LockService;
+import com.example.saveapp.activity.LockActivity;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
@@ -72,8 +71,8 @@ public class HomeFragment extends Fragment {
                     public void onAction(List<String> data) {
                         if(startType==1){
                             Toast.makeText(getActivity(), "安全模式启动", Toast.LENGTH_SHORT).show();
-                            LocationService.start(getActivity());
-                            LockService.start(getActivity());
+                            LockActivity.start(getActivity());
+
                         } else if(startType==2){
                             FindActivity.start(getActivity());
                         }

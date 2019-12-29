@@ -96,7 +96,7 @@ public class FindActivity extends Activity {
                     List<LatLng> points = new ArrayList<LatLng>();
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) != null) {
-                            points.add(new LatLng(list.get(i).getLocation().getLatitude(),list.get(i).getLocation().getLongitude()));
+                            points.add(new LatLng(list.get(i).getLocation().getLatitude(), list.get(i).getLocation().getLongitude()));
                         }
                     }
                     setMarker(points);
@@ -104,6 +104,7 @@ public class FindActivity extends Activity {
             }
         });
     }
+
     /**
      * 添加marker
      */
@@ -115,11 +116,23 @@ public class FindActivity extends Activity {
                 .width(10)
                 .color(0xAAFF0000)
                 .points(points);
-//在地图上绘制折线
-//mPloyline 折线对象
         Overlay mPolyline = mBaiduMap.addOverlay(mOverlayOptions);
         //定义Maker坐标点);
 
+    }
+    /**
+     * 添加marker
+     */
+    private void setMarker(double lat, double lon) {
+        //定义Maker坐标点
+        LatLng point = new LatLng(lat, lon);
+        //构建Marker图标
+        //构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlay(option);
     }
 
     /**
@@ -136,6 +149,7 @@ public class FindActivity extends Activity {
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
+        setMarker(lat,lon);
     }
 
     /**

@@ -19,10 +19,6 @@
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity android:name=".activity.FindActivity" />
 
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login" />
-
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,13 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LocationActivity" />
-        <activity
-            android:name=".activity.TakePhotoActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:taskAffinity="com.example.suoping.lockscreen"
-            android:theme="@android:style/Theme.NoTitleBar" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.LoginByPasswordActivity" />
         <activity android:name=".activity.LoginBySMSActivity" />
@@ -48,20 +37,10 @@
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="com.example.saveapp.BmobContentProvider" />
-
-        <service
-            android:name=".service.LocationService"
-            android:enabled="true"
-            android:exported="true"></service>
-
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-        <service
-            android:name=".service.LockService"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
     <uses-feature android:name="android.hardware.camera" />
