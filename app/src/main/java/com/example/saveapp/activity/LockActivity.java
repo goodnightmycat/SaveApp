@@ -138,6 +138,7 @@ public class LockActivity extends Activity {
             Log.i("lon", "onReceiveLocation: " + location.getLongitude());
             LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
             LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            Toast.makeText(LockActivity.this, "距离:"+DistanceUtil.getDistance(oldPosition, newPosition), Toast.LENGTH_LONG).show();
             if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
                 if (init && !play) {
                     play = true;
@@ -259,5 +260,10 @@ public class LockActivity extends Activity {
             }
         }).start();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
     }
 }
