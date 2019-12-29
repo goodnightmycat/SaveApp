@@ -75,7 +75,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }
-        BmobSMS.requestSMSCode(phone, "DataSDK", new QueryListener<Integer>() {
+        BmobSMS.requestSMSCode(phone, "SaveApp", new QueryListener<Integer>() {
             @Override
             public void done(Integer smsId, BmobException e) {
                 if (e == null) {
