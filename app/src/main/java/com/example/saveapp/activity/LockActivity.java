@@ -3,6 +3,10 @@ package com.example.saveapp.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -39,14 +43,24 @@ import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 
-public class LockActivity extends Activity {
+public class LockActivity extends Activity implements SensorEventListener {
     private EditText password;
     private CameraView mCameraView;
     private static final String TAG = "LockActivity";
     private LocationClient mLocationClient = null;
     private BDLocationListener myListener = new LockActivity.MyLocationListener();
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
     private AudioManager audioManager = null; // Audio管理器，用了控制音量
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    public static int CURRENT_STEP = 0;
+    // 加速计的三个维度数值
+    public static float[] gravity = new float[3];
+    //用三个维度算出的平均值
+    public static float average = 0;
+    public boolean callPolice = false;
+    private int countTime = 0;
+
 
     public static void start(Context context) {
         Intent intent = new Intent(context, LockActivity.class);
@@ -79,6 +93,14 @@ public class LockActivity extends Activity {
                 }
             }
         });
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
     /**
@@ -125,6 +147,59 @@ public class LockActivity extends Activity {
         }.start();
     }
 
+    private void initUpLoadPositionTime() {
+        new CountDownTimer(Integer.MAX_VALUE, 2000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                countTime++;
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        synchronized (this) {
+            if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+                // 用低通滤波器分离出重力加速度
+                // alpha 由 t / (t + dT)计算得来，其中 t 是低通滤波器的时间常数，dT 是事件报送频率
+                float alpha = 0.8f;
+                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+                average = (float) Math.sqrt(Math.pow(gravity[0], 2)
+                        + Math.pow(gravity[1], 2) + Math.pow(gravity[2], 2));
+
+                float vermaxValue = 10.0f;
+                if (average >= vermaxValue) {
+                    CURRENT_STEP++;
+                    if (CURRENT_STEP >= 80 && !callPolice) {
+                        callPolice();
+                        autoTakePhoto();
+                        callPolice = true;
+                        mSensorManager.unregisterListener(this, sensor);
+                    }
+                    if (CURRENT_STEP >= 30) {
+                        Toast.makeText(LockActivity.this, "请解除安全模式", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
     public class MyLocationListener implements BDLocationListener {
         private double oldLatitude = 0;
         private double oldLongtitude = 0;
@@ -138,18 +213,33 @@ public class LockActivity extends Activity {
             Log.i("lon", "onReceiveLocation: " + location.getLongitude());
             LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
             LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            Toast.makeText(LockActivity.this, "距离:"+DistanceUtil.getDistance(oldPosition, newPosition), Toast.LENGTH_LONG).show();
+            Toast.makeText(LockActivity.this, "距离:" + DistanceUtil.getDistance(oldPosition, newPosition), Toast.LENGTH_LONG).show();
             if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
                 if (init && !play) {
                     play = true;
                     callPolice();
                     autoTakePhoto();
-                    Toast.makeText(LockActivity.this, "你在干什么？", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LockActivity.this, "报警？", Toast.LENGTH_LONG).show();
                 }
                 oldLatitude = location.getLatitude();
                 oldLongtitude = location.getLongitude();
                 init = true;
-                //上传位置信息
+                if (countTime % 5 == 0) {
+                    //上传位置信息
+                    Position position = new Position();
+                    position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+                    position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
+                    position.save(new SaveListener<String>() {
+                        @Override
+                        public void done(String objectId, BmobException e) {
+                            if (e == null) {
+                                Log.d(TAG, "done: ");
+                            } else {
+                            }
+                        }
+                    });
+                }
+            } else if (callPolice&&countTime%10==0) {
                 Position position = new Position();
                 position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
                 position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
@@ -157,7 +247,7 @@ public class LockActivity extends Activity {
                     @Override
                     public void done(String objectId, BmobException e) {
                         if (e == null) {
-
+                            Log.d(TAG, "done: ");
                         } else {
                         }
                     }
@@ -167,7 +257,7 @@ public class LockActivity extends Activity {
     }
 
     private void autoTakePhoto() {
-        new CountDownTimer(Integer.MAX_VALUE, 5000) {
+        new CountDownTimer(Integer.MAX_VALUE, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (mCameraView != null) {
@@ -183,6 +273,8 @@ public class LockActivity extends Activity {
     }
 
     private void callPolice() {
+        initUpLoadPositionTime();
+        callPolice = true;
         maxVoice();
         mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
         mediaPlayer.setLooping(true);
@@ -261,6 +353,7 @@ public class LockActivity extends Activity {
         }).start();
 
     }
+
 
     @Override
     public void onBackPressed() {

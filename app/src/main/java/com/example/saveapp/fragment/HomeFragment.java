@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.saveapp.R;
+import com.example.saveapp.StepDcretor;
 import com.example.saveapp.activity.FindActivity;
 import com.example.saveapp.activity.LockActivity;
 import com.yanzhenjie.permission.Action;
@@ -36,8 +37,8 @@ public class HomeFragment extends Fragment {
         open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    startType=1;
-                    requestPermission();
+                startType = 1;
+                requestPermission();
             }
         });
 
@@ -45,8 +46,8 @@ public class HomeFragment extends Fragment {
         find.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    startType=2;
-                    requestPermission();
+                startType = 2;
+                requestPermission();
             }
         });
         TextView grant = view.findViewById(R.id.fragment_home_grant);
@@ -69,11 +70,10 @@ public class HomeFragment extends Fragment {
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> data) {
-                        if(startType==1){
+                        if (startType == 1) {
                             Toast.makeText(getActivity(), "安全模式启动", Toast.LENGTH_SHORT).show();
                             LockActivity.start(getActivity());
-
-                        } else if(startType==2){
+                        } else if (startType == 2) {
                             FindActivity.start(getActivity());
                         }
                     }
