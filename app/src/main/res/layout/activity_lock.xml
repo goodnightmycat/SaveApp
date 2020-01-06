@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context=".activity.LockActivity">
+
+    <com.google.android.cameraview.CameraView
+        android:id="@+id/activity_lock_camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        />
+    <EditText
+        android:layout_marginLeft="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:hint="输入密码退出安全模式"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:textSize="24sp"
+        android:inputType="textPassword"
+        android:id="@+id/activity_lock_password"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toRightOf="@id/activity_lock_password"
+        android:layout_alignParentBottom="true"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:id="@+id/activity_lock_cancel"
+        android:text="确定"
+        android:layout_height="50dp"
+        android:layout_marginRight="20dp"/>
+
+</RelativeLayout>

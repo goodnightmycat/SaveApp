@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:textSize="24sp"
+        android:text="用户名："
+        android:gravity="center_vertical"
+        android:id="@+id/fragment_set_name"
+        android:layout_marginLeft="15dp" />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="24sp"
+        android:text="密码：    ******"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/fragment_set_password"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="24sp"
+        android:text="手机号："
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/fragment_set_phone"/>
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:text="退出当前账号"
+        android:textSize="24sp"
+        android:layout_gravity="bottom"
+        android:background="#00000000"
+        android:id="@+id/fragment_set_logout"/>
+
+</LinearLayout>
