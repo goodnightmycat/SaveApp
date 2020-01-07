@@ -28,6 +28,7 @@ public class PermissionDialog extends Dialog {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dismiss();
                 mListener.onConfirm();
             }
         });
