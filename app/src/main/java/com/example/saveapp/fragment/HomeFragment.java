@@ -1,6 +1,8 @@
 package com.example.saveapp.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +18,9 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.saveapp.R;
-import com.example.saveapp.StepDcretor;
 import com.example.saveapp.activity.FindActivity;
 import com.example.saveapp.activity.LockActivity;
+import com.example.saveapp.view.PermissionDialog;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
@@ -28,6 +30,7 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment {
     private int startType;
+    private String key = "dialog";
 
     @Nullable
     @Override
@@ -62,7 +65,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    public void requestPermission() {
+    private void requestPermission() {
         AndPermission.with(this)
                 .runtime()
                 .permission(Permission.READ_EXTERNAL_STORAGE,
@@ -85,6 +88,27 @@ public class HomeFragment extends Fragment {
                     }
                 })
                 .start();
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(key, Context.MODE_PRIVATE);
+            if (!sharedPreferences.getBoolean(key, false)) {
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(key, Context.MODE_PRIVATE).edit();
+                editor.putBoolean(key, true);
+                editor.apply();
+                new PermissionDialog(getActivity(), new PermissionDialog.Listener() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void onConfirm() {
+                        getAppDetailSettingIntent();
+                    }
+                }).show();
+            }
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

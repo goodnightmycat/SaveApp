@@ -34,6 +34,7 @@ import com.example.saveapp.bean.User;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
 import com.example.saveapp.face.faceBase.FaceAdd;
 import com.example.saveapp.util.Base64Util;
+import com.example.saveapp.view.BirthDayPicker;
 import com.google.android.cameraview.CameraView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -148,7 +149,7 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     private void initUpLoadPositionTime() {
-        new CountDownTimer(Integer.MAX_VALUE, 2000) {
+        new CountDownTimer(Integer.MAX_VALUE, 1000*10) {
             @Override
             public void onTick(long millisUntilFinished) {
                 countTime++;
@@ -166,7 +167,6 @@ public class LockActivity extends Activity implements SensorEventListener {
         Sensor sensor = event.sensor;
         synchronized (this) {
             if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
                 // 用低通滤波器分离出重力加速度
                 // alpha 由 t / (t + dT)计算得来，其中 t 是低通滤波器的时间常数，dT 是事件报送频率
                 float alpha = 0.8f;
@@ -175,10 +175,10 @@ public class LockActivity extends Activity implements SensorEventListener {
                 gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
                 average = (float) Math.sqrt(Math.pow(gravity[0], 2)
                         + Math.pow(gravity[1], 2) + Math.pow(gravity[2], 2));
-
                 float vermaxValue = 10.0f;
                 if (average >= vermaxValue) {
                     CURRENT_STEP++;
+                    Toast.makeText(LockActivity.this, "移动次数"+CURRENT_STEP, Toast.LENGTH_LONG).show();
                     if (CURRENT_STEP >= 80 && !callPolice) {
                         callPolice();
                         autoTakePhoto();
@@ -201,54 +201,20 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     public class MyLocationListener implements BDLocationListener {
-        private double oldLatitude = 0;
-        private double oldLongtitude = 0;
-        private boolean init = false;
-        private boolean play = false;
-
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onReceiveLocation(BDLocation location) {
-            Log.i("lat", "onReceiveLocation: " + location.getLatitude());
-            Log.i("lon", "onReceiveLocation: " + location.getLongitude());
-            LatLng oldPosition = new LatLng(oldLatitude, oldLongtitude);
-            LatLng newPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            Toast.makeText(LockActivity.this, "距离:" + DistanceUtil.getDistance(oldPosition, newPosition), Toast.LENGTH_LONG).show();
-            if (DistanceUtil.getDistance(oldPosition, newPosition) >= 5) {
-                if (init && !play) {
-                    play = true;
-                    callPolice();
-                    autoTakePhoto();
-                    Toast.makeText(LockActivity.this, "报警？", Toast.LENGTH_LONG).show();
-                }
-                oldLatitude = location.getLatitude();
-                oldLongtitude = location.getLongitude();
-                init = true;
-                if (countTime % 5 == 0) {
-                    //上传位置信息
-                    Position position = new Position();
-                    position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-                    position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
-                    position.save(new SaveListener<String>() {
-                        @Override
-                        public void done(String objectId, BmobException e) {
-                            if (e == null) {
-                                Log.d(TAG, "done: ");
-                            } else {
-                            }
-                        }
-                    });
-                }
-            } else if (callPolice&&countTime%10==0) {
+            if (callPolice && countTime % 3 == 0) {
                 Position position = new Position();
                 position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-                position.setLocation(new BmobGeoPoint(oldLongtitude, oldLatitude));
+                position.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
                 position.save(new SaveListener<String>() {
                     @Override
                     public void done(String objectId, BmobException e) {
                         if (e == null) {
                             Log.d(TAG, "done: ");
                         } else {
+
                         }
                     }
                 });

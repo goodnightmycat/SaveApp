@@ -20,12 +20,11 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
 
-public class LoginBySMSActivity extends Activity implements View.OnClickListener{
+public class LoginBySMSActivity extends Activity implements View.OnClickListener {
     private EditText etphone;
     private EditText etcode;
     private Button login;
     private Button send;
-
 
 
     @Override
@@ -33,35 +32,34 @@ public class LoginBySMSActivity extends Activity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_loginbysms);
-        etphone =  findViewById(R.id.et_phone);
-        etcode =  findViewById(R.id.et_code);
-        login =  findViewById(R.id.login);
+        etphone = findViewById(R.id.et_phone);
+        etcode = findViewById(R.id.et_code);
+        login = findViewById(R.id.login);
         login.setOnClickListener(this);
-        send =  findViewById(R.id.send);
+        send = findViewById(R.id.send);
         send.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.login:
-                {
-                    String phone=etphone.getText().toString();
-                    if (TextUtils.isEmpty(phone)) {
-                        Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    String code=etcode.getText().toString();
-                    if (TextUtils.isEmpty(code)) {
-                        Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+        switch (v.getId()) {
+            case R.id.login: {
+                String phone = etphone.getText().toString();
+                if (TextUtils.isEmpty(phone)) {
+                    Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String code = etcode.getText().toString();
+                if (TextUtils.isEmpty(code)) {
+                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                    BmobUser.loginBySMSCode(phone, code, new LogInListener<BmobUser>() {
+                BmobUser.loginBySMSCode(phone, code, new LogInListener<BmobUser>() {
                     @Override
                     public void done(BmobUser bmobUser, BmobException e) {
                         if (e == null) {
-                            Intent intent=new Intent(LoginBySMSActivity.this,MainActivity.class);
+                            Intent intent = new Intent(LoginBySMSActivity.this, MainActivity.class);
                             startActivity(intent);
 
                         } else {
@@ -71,21 +69,22 @@ public class LoginBySMSActivity extends Activity implements View.OnClickListener
                         }
                     }
                 });
-                    break;}
-            case R.id.send:
-                {
-                    String phone=etphone.getText().toString();
-                    BmobSMS.requestSMSCode(phone, "Bomb", new QueryListener<Integer>() {
-                        @Override
-                        public void done(Integer smsId, BmobException e) {
-                            if (e == null) {
+                break;
+            }
+            case R.id.send: {
+                String phone = etphone.getText().toString();
+                BmobSMS.requestSMSCode(phone, "Bomb", new QueryListener<Integer>() {
+                    @Override
+                    public void done(Integer smsId, BmobException e) {
+                        if (e == null) {
 
-                            } else {
+                        } else {
 
-                            }
                         }
-                    });
-                    break;}
+                    }
+                });
+                break;
+            }
         }
 
     }

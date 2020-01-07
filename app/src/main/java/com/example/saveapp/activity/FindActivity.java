@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -26,18 +28,16 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.saveapp.R;
 import com.example.saveapp.bean.Position;
+import com.example.saveapp.view.BirthDayPicker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
 
 public class FindActivity extends Activity {
     private MapView mMapView;
@@ -63,6 +63,18 @@ public class FindActivity extends Activity {
         SDKInitializer.initialize(getApplicationContext());
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_find);
+        TextView choose = findViewById(R.id.choose_date);
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new BirthDayPicker(FindActivity.this, new BirthDayPicker.OnSelectListener() {
+                    @Override
+                    public void onDateSelect(String date) {
+                        findPosition(date);
+                    }
+                }).show();
+            }
+        });
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("定位中");
         mProgressDialog.setCanceledOnTouchOutside(false);
@@ -83,10 +95,10 @@ public class FindActivity extends Activity {
         initLocation();
         //开始定位
         mLocationClient.start();
-        findPosition();
+        findPosition(null);
     }
 
-    private void findPosition() {
+    private void findPosition(final String choose) {
         //最终的查询条件
         BmobQuery<Position> query = new BmobQuery<>();
         query.findObjects(new FindListener<Position>() {
@@ -96,7 +108,11 @@ public class FindActivity extends Activity {
                     List<LatLng> points = new ArrayList<LatLng>();
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) != null) {
-                            points.add(new LatLng(list.get(i).getLocation().getLatitude(), list.get(i).getLocation().getLongitude()));
+                            if (choose == null) {
+                                points.add(new LatLng(list.get(i).getLocation().getLatitude(), list.get(i).getLocation().getLongitude()));
+                            } else if (choose.equals(list.get(0).getCreatedAt().substring(0, 10))) {
+                                points.add(new LatLng(list.get(i).getLocation().getLatitude(), list.get(i).getLocation().getLongitude()));
+                            }
                         }
                     }
                     setMarker(points);
@@ -109,7 +125,9 @@ public class FindActivity extends Activity {
      * 添加marker
      */
     private void setMarker(List<LatLng> points) {
-        if (points == null) {
+        mBaiduMap.clear();
+        if (points == null || points.size() == 0) {
+            Toast.makeText(FindActivity.this, "该日期无记录", Toast.LENGTH_SHORT).show();
             return;
         }
         OverlayOptions mOverlayOptions = new PolylineOptions()
@@ -120,6 +138,7 @@ public class FindActivity extends Activity {
         //定义Maker坐标点);
 
     }
+
     /**
      * 添加marker
      */
@@ -149,7 +168,7 @@ public class FindActivity extends Activity {
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-        setMarker(lat,lon);
+        setMarker(lat, lon);
     }
 
     /**
