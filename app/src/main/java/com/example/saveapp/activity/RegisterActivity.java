@@ -2,17 +2,13 @@ package com.example.saveapp.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,15 +18,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.saveapp.R;
 import com.example.saveapp.bean.User;
-import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
-import com.example.saveapp.face.faceBase.FaceAdd;
-import com.example.saveapp.util.Base64Util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.exception.BmobException;
@@ -39,13 +29,14 @@ import cn.bmob.v3.listener.SaveListener;
 
 
 public class RegisterActivity extends Activity implements View.OnClickListener {
-    private EditText etphone;
-    private EditText etpassword;
-    private EditText etname;
-    private EditText etcode;
+    private EditText etPhone;
+    private EditText etPassword;
+    private EditText etName;
+    private EditText etCode;
     private Button register;
     private Button send;
     private TimeCount time;
+    private boolean isPhone = false;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, RegisterActivity.class);
@@ -57,10 +48,26 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA}, 1);
-        etname = findViewById(R.id.et_name);
-        etphone = findViewById(R.id.et_phone);
-        etpassword = findViewById(R.id.et_password);
-        etcode = findViewById(R.id.et_code);
+        etName = findViewById(R.id.et_name);
+        etPhone = findViewById(R.id.et_phone);
+        etPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                isPhone = isPhone(s.toString());
+            }
+        });
+        etPassword = findViewById(R.id.et_password);
+        etCode = findViewById(R.id.et_code);
         register = findViewById(R.id.bt_register);
         register.setOnClickListener(this);
         time = new TimeCount(60000, 1000);//第一个是要倒数多少秒，可以改
@@ -69,12 +76,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     }
 
     private void getCode() {
-        String phone;
-        phone = etphone.getText().toString();
-        if (TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
+        if (!isPhone) {
             return;
         }
+        time.start();
+        String phone;
+        phone = etPhone.getText().toString();
         BmobSMS.requestSMSCode(phone, "SaveApp", new QueryListener<Integer>() {
             @Override
             public void done(Integer smsId, BmobException e) {
@@ -90,24 +97,22 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     }
 
     private void signOrLogin() {
-
-        String name = etname.getText().toString();
+        if (!isPhone) {
+            return;
+        }
+        String name = etName.getText().toString();
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "请输入用户名", Toast.LENGTH_SHORT).show();
             return;
         }
-        String phone = etphone.getText().toString();
-        if (TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String code = etcode.getText().toString();
+        String phone = etPhone.getText().toString();
+        String code = etCode.getText().toString();
         if (TextUtils.isEmpty(code)) {
             Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String password = etpassword.getText().toString();
+        String password = etPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "请输入密码", Toast.LENGTH_SHORT).show();
             return;
@@ -172,12 +177,27 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                 signOrLogin();
                 break;
             case R.id.send:
-                Toast.makeText(RegisterActivity.this, "已发送", Toast.LENGTH_SHORT).show();
-                time.start();
                 getCode();
                 break;
         }
 
+    }
+
+    /**
+     * 判断是否为手机号码
+     *
+     * @param phone
+     * @return true：是 false：否
+     */
+    public static boolean isPhone(String phone) {
+        String regex = "\\d{11}$";
+        if (phone.length() != 11) {
+            return false;
+        } else {
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(phone);
+            return m.matches();
+        }
     }
 
     @Override

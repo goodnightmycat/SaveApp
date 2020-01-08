@@ -136,7 +136,6 @@ public class FindActivity extends Activity {
                 .points(points);
         Overlay mPolyline = mBaiduMap.addOverlay(mOverlayOptions);
         //定义Maker坐标点);
-
     }
 
     /**

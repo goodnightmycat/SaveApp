@@ -67,6 +67,7 @@
         android:gravity="center"
         android:hint="手机号"
         android:inputType="phone"
+        android:maxEms="11"
         android:singleLine="true"
         android:textColorHint="#000000" />
 

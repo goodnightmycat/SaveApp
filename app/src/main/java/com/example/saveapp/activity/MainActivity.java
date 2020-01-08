@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
         };
         final ViewPager viewPager = findViewById(R.id.activity_main_viewPager);
         viewPager.setAdapter(fragmentPagerAdapter);
-        TextView homw = findViewById(R.id.activity_main_home);
-        homw.setOnClickListener(new View.OnClickListener() {
+        TextView home = findViewById(R.id.activity_main_home);
+        home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(0);
