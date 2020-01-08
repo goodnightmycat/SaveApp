@@ -41,7 +41,7 @@ public class FaceAdd {
         return null;
     }
 
-    public static boolean isadd(String image, String group_id, String user_id) {
+    public static boolean isFaceAdd(String image, String group_id, String user_id) {
         //String token="24.a39fb63ea8a3b1d25e33ef6af1bef594.2592000.1563671561.282335-16583245";
         String result = add(image, group_id, user_id);
         if (result != null) {

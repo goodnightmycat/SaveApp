@@ -45,14 +45,14 @@ public class FaceVerify {
         return null;
     }
 
-    public static boolean isverify(String image, String image_type) {
+    public static boolean isFace(String image, String image_type) {
         String result = FaceVerify.faceVerify(image, image_type);
         FaceVerifyResultBean faceVerifyResultBean = com.alibaba.fastjson.JSONObject.toJavaObject(JSON.parseObject(result), FaceVerifyResultBean.class);
         String error = String.valueOf(faceVerifyResultBean.getError_code());
         //  if (result!=null){
         if (error.equals("0")) {
             float face_liveness = faceVerifyResultBean.getResult().getFace_liveness();
-            Log.i("1", "isverify: "+face_liveness);
+            Log.i("1", "isFace: "+face_liveness);
             if (face_liveness > 0.393241)
                 return true;
         }

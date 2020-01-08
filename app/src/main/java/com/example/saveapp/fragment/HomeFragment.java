@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
     private void requestPermission() {
         AndPermission.with(this)
                 .runtime()
-                .permission(Permission.READ_EXTERNAL_STORAGE,
+                .permission(Permission.READ_PHONE_STATE,Permission.READ_EXTERNAL_STORAGE,
                         Permission.WRITE_EXTERNAL_STORAGE, Permission.CAMERA, Permission.ACCESS_FINE_LOCATION)
                 .onGranted(new Action<List<String>>() {
                     @Override

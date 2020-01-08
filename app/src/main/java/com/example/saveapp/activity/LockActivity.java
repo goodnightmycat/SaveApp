@@ -34,10 +34,7 @@ import com.example.saveapp.bean.User;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
 import com.example.saveapp.face.faceBase.FaceAdd;
 import com.example.saveapp.util.Base64Util;
-import com.example.saveapp.view.BirthDayPicker;
 import com.google.android.cameraview.CameraView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobGeoPoint;
@@ -60,7 +57,7 @@ public class LockActivity extends Activity implements SensorEventListener {
     //用三个维度算出的平均值
     public static float average = 0;
     public boolean callPolice = false;
-    private int countTime = 0;
+    private Position mUploadPosition = new Position();
 
 
     public static void start(Context context) {
@@ -148,11 +145,22 @@ public class LockActivity extends Activity implements SensorEventListener {
         }.start();
     }
 
-    private void initUpLoadPositionTime() {
-        new CountDownTimer(Integer.MAX_VALUE, 1000*10) {
+    private void upLoadPosition() {
+        new CountDownTimer(Integer.MAX_VALUE, 1000 * 10) {
             @Override
             public void onTick(long millisUntilFinished) {
-                countTime++;
+                if (callPolice && mUploadPosition.getLocation() != null) {
+                    mUploadPosition.save(new SaveListener<String>() {
+                        @Override
+                        public void done(String objectId, BmobException e) {
+                            if (e == null) {
+                                Log.i(TAG, "upLoadPositionSucceed: ");
+                            } else {
+                                Log.i(TAG, "upLoadPositionFailed: ");
+                            }
+                        }
+                    });
+                }
             }
 
             @Override
@@ -178,11 +186,10 @@ public class LockActivity extends Activity implements SensorEventListener {
                 float vermaxValue = 10.0f;
                 if (average >= vermaxValue) {
                     CURRENT_STEP++;
-                    Toast.makeText(LockActivity.this, "移动次数"+CURRENT_STEP, Toast.LENGTH_LONG).show();
-                    if (CURRENT_STEP >= 80 && !callPolice) {
+                    Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
+                    if (CURRENT_STEP >= 8 && !callPolice) {
                         callPolice();
                         autoTakePhoto();
-                        callPolice = true;
                         mSensorManager.unregisterListener(this, sensor);
                     }
                     if (CURRENT_STEP >= 30) {
@@ -201,29 +208,22 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     public class MyLocationListener implements BDLocationListener {
+        private LatLng oldPosition = new LatLng(0, 0);
+
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onReceiveLocation(BDLocation location) {
-            if (callPolice && countTime % 3 == 0) {
-                Position position = new Position();
-                position.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-                position.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
-                position.save(new SaveListener<String>() {
-                    @Override
-                    public void done(String objectId, BmobException e) {
-                        if (e == null) {
-                            Log.d(TAG, "done: ");
-                        } else {
-
-                        }
-                    }
-                });
+            LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+            if (callPolice && DistanceUtil.getDistance(oldPosition, position) > 10) {
+                oldPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                mUploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+                mUploadPosition.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
             }
         }
     }
 
     private void autoTakePhoto() {
-        new CountDownTimer(Integer.MAX_VALUE, 1000) {
+        new CountDownTimer(Integer.MAX_VALUE, 10000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (mCameraView != null) {
@@ -239,17 +239,17 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     private void callPolice() {
-        initUpLoadPositionTime();
         callPolice = true;
-        maxVoice();
-        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.start();
-            }
-        });
+        upLoadPosition();
+//        maxVoice();
+//        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
+//        mediaPlayer.setLooping(true);
+//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mediaPlayer) {
+//                mediaPlayer.start();
+//            }
+//        });
     }
 
     @Override
@@ -304,16 +304,17 @@ public class LockActivity extends Activity implements SensorEventListener {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean right = FaceVerify.isverify(image, "BASE64");
-                if (right) {
-                    Log.i(TAG, "succeed: ");
-                    boolean right2 = FaceAdd.isadd(image, "sign", BmobUser.getCurrentUser(User.class).getMobilePhoneNumber());
-                    if (right2) {
-                        EventBus.getDefault().post("add");
+                boolean isFace = FaceVerify.isFace(image, "BASE64");
+                if (isFace) {
+                    Log.i(TAG, "isFace: ");
+                    boolean isFaceAdd = FaceAdd.isFaceAdd(image, "sign", BmobUser.getCurrentUser(User.class).getMobilePhoneNumber());
+                    if (isFaceAdd) {
+                        Log.i(TAG, "AddFaceSucceed: ");
                     } else {
+                        Log.i(TAG, "AddFaceFailed: ");
                     }
                 } else {
-                    Log.i(TAG, "failed: ");
+                    Log.i(TAG, "isNotFace: ");
                 }
             }
         }).start();

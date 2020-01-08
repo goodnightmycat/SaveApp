@@ -30,12 +30,14 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.example.saveapp.R;
 import com.example.saveapp.bean.Position;
+import com.example.saveapp.bean.User;
 import com.example.saveapp.view.BirthDayPicker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
@@ -101,6 +103,7 @@ public class FindActivity extends Activity {
     private void findPosition(final String choose) {
         //最终的查询条件
         BmobQuery<Position> query = new BmobQuery<>();
+        query.addWhereEqualTo("user_id", BmobUser.getCurrentUser(User.class).getObjectId());
         query.findObjects(new FindListener<Position>() {
             @Override
             public void done(List<Position> list, BmobException e) {
