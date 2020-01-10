@@ -13,6 +13,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.example.saveapp.PositionService;
 import com.example.saveapp.R;
+import com.example.saveapp.SharePreferenceKey;
 import com.example.saveapp.bean.Position;
 import com.example.saveapp.bean.User;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
@@ -83,7 +85,7 @@ public class LockActivity extends Activity implements SensorEventListener {
             public void onClick(View view) {
                 String passwordString = password.getText().toString();
                 if (passwordString.equals(BmobUser.getCurrentUser(User.class).getLockPassword())) {
-                    SharePreferenceUtil.write("callPolice", false);
+                    SharePreferenceUtil.write(SharePreferenceKey.CALL_POLICE, false);
                     finish();
                 } else {
                     if (mCameraView != null) {
@@ -180,14 +182,13 @@ public class LockActivity extends Activity implements SensorEventListener {
                 float maxValue = 10.0f;
                 if (average >= maxValue) {
                     CURRENT_STEP++;
-                    Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
                     if (CURRENT_STEP >= 50 && !callPolice) {
                         callPolice();
-                        autoTakePhoto();
                         mSensorManager.unregisterListener(this, sensor);
                     }
                     if (CURRENT_STEP >= 30) {
-                        Toast.makeText(LockActivity.this, "请解除安全模式", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(LockActivity.this, "请解除安全模式", Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -217,6 +218,7 @@ public class LockActivity extends Activity implements SensorEventListener {
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onReceiveLocation(BDLocation location) {
+            Log.i(TAG, "onReceiveLocation: ");
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
             if (callPolice && DistanceUtil.getDistance(oldPosition, position) > 10) {
                 oldPosition = new LatLng(location.getLatitude(), location.getLongitude());
@@ -229,24 +231,25 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     private void autoTakePhoto() {
-//       new CountDownTimer(Integer.MAX_VALUE, 10000) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                if (mCameraView != null) {
-//                    mCameraView.takePicture();
-//                }
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//
-//            }
-//        }.start();
+       new CountDownTimer(Integer.MAX_VALUE, 10000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (mCameraView != null) {
+                    mCameraView.takePicture();
+                }
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
     }
 
     private void callPolice() {
-        SharePreferenceUtil.write("callPolice", true);
+        SharePreferenceUtil.write(SharePreferenceKey.CALL_POLICE, true);
         callPolice = true;
+//        autoTakePhoto();
 //        maxVoice();
 //        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
 //        mediaPlayer.setLooping(true);

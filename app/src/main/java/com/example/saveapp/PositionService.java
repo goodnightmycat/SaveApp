@@ -20,9 +20,9 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
-import com.example.saveapp.activity.SplashActivity;
 import com.example.saveapp.bean.Position;
 import com.example.saveapp.bean.User;
+import com.example.saveapp.util.SharePreferenceUtil;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobGeoPoint;
@@ -58,12 +58,15 @@ public class PositionService extends Service {
         @Override
         public void onReceiveLocation(BDLocation location) {
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-            if (DistanceUtil.getDistance(oldPosition, position) > 10) {
+            if (DistanceUtil.getDistance(oldPosition, position) > 10 && SharePreferenceUtil.readBoolean(SharePreferenceKey.CALL_POLICE, false)) {
                 oldPosition = new LatLng(location.getLatitude(), location.getLongitude());
                 Position uploadPosition = new Position();
                 uploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
                 uploadPosition.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
                 upLoadPosition(uploadPosition);
+            }
+            if (!SharePreferenceUtil.readBoolean(SharePreferenceKey.CALL_POLICE, false)) {
+                stopSelf();
             }
         }
     }
