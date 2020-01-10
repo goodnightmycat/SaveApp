@@ -38,12 +38,14 @@ import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 public class FindActivity extends Activity {
     private MapView mMapView;
-
+    private static final String TAG="FindActivity";
     private LocationClient mLocationClient = null;
     private BDLocationListener myListener = new MyLocationListener();
     private BaiduMap mBaiduMap;
@@ -97,6 +99,39 @@ public class FindActivity extends Activity {
         initLocation();
         //开始定位
         mLocationClient.start();
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+                Position mUploadPosition=new Position();
+                mUploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+                mUploadPosition.setLocation(new BmobGeoPoint(mapStatus.target.longitude, mapStatus.target.latitude));
+                mUploadPosition.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String objectId, BmobException e) {
+                        if (e == null) {
+                            Log.i(TAG, "upLoadPositionSucceed: ");
+                        } else {
+                            Log.i(TAG, "upLoadPositionFailed: ");
+                        }
+                    }
+                });
+            }
+        });
         findPosition(null);
     }
 

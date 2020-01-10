@@ -1,8 +1,10 @@
 package com.example.saveapp.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,8 +13,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,12 +30,14 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.example.saveapp.PositionService;
 import com.example.saveapp.R;
 import com.example.saveapp.bean.Position;
 import com.example.saveapp.bean.User;
 import com.example.saveapp.face.RealManFaceCheck.FaceVerify;
 import com.example.saveapp.face.faceBase.FaceAdd;
 import com.example.saveapp.util.Base64Util;
+import com.example.saveapp.util.SharePreferenceUtil;
 import com.google.android.cameraview.CameraView;
 
 import cn.bmob.v3.BmobUser;
@@ -48,7 +52,6 @@ public class LockActivity extends Activity implements SensorEventListener {
     private LocationClient mLocationClient = null;
     private BDLocationListener myListener = new LockActivity.MyLocationListener();
     private MediaPlayer mediaPlayer;
-    private AudioManager audioManager = null; // Audio管理器，用了控制音量
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     public static int CURRENT_STEP = 0;
@@ -57,7 +60,6 @@ public class LockActivity extends Activity implements SensorEventListener {
     //用三个维度算出的平均值
     public static float average = 0;
     public boolean callPolice = false;
-    private Position mUploadPosition = new Position();
 
 
     public static void start(Context context) {
@@ -81,18 +83,21 @@ public class LockActivity extends Activity implements SensorEventListener {
             public void onClick(View view) {
                 String passwordString = password.getText().toString();
                 if (passwordString.equals(BmobUser.getCurrentUser(User.class).getLockPassword())) {
+                    SharePreferenceUtil.write("callPolice", false);
                     finish();
                 } else {
                     if (mCameraView != null) {
-                        callPolice();
                         mCameraView.takePicture();
+                        callPolice();
                     }
                     Toast.makeText(LockActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (mSensorManager != null) {
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
     }
 
     @Override
@@ -100,7 +105,6 @@ public class LockActivity extends Activity implements SensorEventListener {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
-
     /**
      * 配置定位参数
      */
@@ -129,45 +133,35 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     private void maxVoice() {
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // Audio管理器，用了控制音量
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         assert audioManager != null;
         final int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);//获取最大音量值
-        new CountDownTimer(Integer.MAX_VALUE, 2000) {
-            @Override
-            public void onTick(long l) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
+//        new CountDownTimer(Integer.MAX_VALUE, 2000) {
+//            @Override
+//            public void onTick(long l) {
+//                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//
+//            }
+//        }.start();
     }
 
-    private void upLoadPosition() {
-        new CountDownTimer(Integer.MAX_VALUE, 1000 * 10) {
+    private void upLoadPosition(Position uploadPosition) {
+        uploadPosition.save(new SaveListener<String>() {
             @Override
-            public void onTick(long millisUntilFinished) {
-                if (callPolice && mUploadPosition.getLocation() != null) {
-                    mUploadPosition.save(new SaveListener<String>() {
-                        @Override
-                        public void done(String objectId, BmobException e) {
-                            if (e == null) {
-                                Log.i(TAG, "upLoadPositionSucceed: ");
-                            } else {
-                                Log.i(TAG, "upLoadPositionFailed: ");
-                            }
-                        }
-                    });
+            public void done(String objectId, BmobException e) {
+                if (e == null) {
+                    Log.i(TAG, "upLoadPositionSucceed: ");
+                } else {
+                    Log.i(TAG, "upLoadPositionFailed: ");
                 }
             }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
+        });
     }
 
     @Override
@@ -183,8 +177,8 @@ public class LockActivity extends Activity implements SensorEventListener {
                 gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
                 average = (float) Math.sqrt(Math.pow(gravity[0], 2)
                         + Math.pow(gravity[1], 2) + Math.pow(gravity[2], 2));
-                float vermaxValue = 10.0f;
-                if (average >= vermaxValue) {
+                float maxValue = 10.0f;
+                if (average >= maxValue) {
                     CURRENT_STEP++;
                     Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
                     if (CURRENT_STEP >= 8 && !callPolice) {
@@ -203,6 +197,16 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyDown: ");
+        if (mCameraView != null && callPolice) {
+            mCameraView.takePicture();
+        }
+        return true;
+
+    }
+
+    @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
@@ -216,31 +220,33 @@ public class LockActivity extends Activity implements SensorEventListener {
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
             if (callPolice && DistanceUtil.getDistance(oldPosition, position) > 10) {
                 oldPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                mUploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-                mUploadPosition.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
+                Position uploadPosition = new Position();
+                uploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+                uploadPosition.setLocation(new BmobGeoPoint(location.getLongitude(), location.getLatitude()));
+                upLoadPosition(uploadPosition);
             }
         }
     }
 
     private void autoTakePhoto() {
-        new CountDownTimer(Integer.MAX_VALUE, 10000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if (mCameraView != null) {
-                    mCameraView.takePicture();
-                }
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
+//       new CountDownTimer(Integer.MAX_VALUE, 10000) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                if (mCameraView != null) {
+//                    mCameraView.takePicture();
+//                }
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//
+//            }
+//        }.start();
     }
 
     private void callPolice() {
+        SharePreferenceUtil.write("callPolice", true);
         callPolice = true;
-        upLoadPosition();
 //        maxVoice();
 //        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
 //        mediaPlayer.setLooping(true);
@@ -321,9 +327,9 @@ public class LockActivity extends Activity implements SensorEventListener {
 
     }
 
-
-    @Override
-    public void onBackPressed() {
-//        super.onBackPressed();
-    }
+//
+//    @Override
+//    public void onBackPressed() {
+////        super.onBackPressed();
+//    }
 }

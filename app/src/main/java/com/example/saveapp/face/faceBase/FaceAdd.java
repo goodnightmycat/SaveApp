@@ -49,7 +49,7 @@ public class FaceAdd {
             addResultBean ResultBean = com.alibaba.fastjson.JSONObject.toJavaObject(JSON.parseObject(result), addResultBean.class);
             String error = String.valueOf(ResultBean.getError_code());
             if (error.equals("0")) {
-                face_token = String.valueOf(ResultBean.getResult().getFace_token());
+                face_token = ResultBean.getResult().getFace_token();
                 System.out.println("上传得到token:" + face_token);
                 if (face_token == null) {
                     return false;
