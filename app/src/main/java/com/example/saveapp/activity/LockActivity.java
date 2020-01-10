@@ -181,7 +181,7 @@ public class LockActivity extends Activity implements SensorEventListener {
                 if (average >= maxValue) {
                     CURRENT_STEP++;
                     Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
-                    if (CURRENT_STEP >= 8 && !callPolice) {
+                    if (CURRENT_STEP >= 50 && !callPolice) {
                         callPolice();
                         autoTakePhoto();
                         mSensorManager.unregisterListener(this, sensor);

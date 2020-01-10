@@ -8,16 +8,33 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/choose_date"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:gravity="center"
-        android:textColor="#404040"
-        android:background="#00000000"
-        android:layout_centerHorizontal="true"
-        android:textSize="25sp"
-        android:text="筛选日期"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:id="@+id/find_position_point"
+            android:textColor="#404040"
+            android:textSize="25sp"
+            android:text="最近定位"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/find_position_line"
+            android:gravity="center"
+            android:textColor="#404040"
+            android:background="#00000000"
+            android:textSize="25sp"
+            android:layout_centerVertical="true"
+            android:text="运动轨迹"/>
+
+    </RelativeLayout>
 </RelativeLayout>

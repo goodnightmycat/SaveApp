@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -38,14 +37,12 @@ import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
 
 public class FindActivity extends Activity {
     private MapView mMapView;
-    private static final String TAG="FindActivity";
+    private static final String TAG = "FindActivity";
     private LocationClient mLocationClient = null;
     private BDLocationListener myListener = new MyLocationListener();
     private BaiduMap mBaiduMap;
@@ -64,79 +61,34 @@ public class FindActivity extends Activity {
         //注意该方法要再setContentView方法之前实现
         //使用百度地图的任何功能都需要先初始化这段代码  最好放在全局中进行初始化
         //百度地图+定位+marker比较简单 我就不放到全局去了
-        SDKInitializer.initialize(getApplicationContext());
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_find);
-        TextView choose = findViewById(R.id.choose_date);
-        choose.setOnClickListener(new View.OnClickListener() {
+        bitmap = BitmapDescriptorFactory.fromResource(R.drawable.current_location);
+        TextView findPositionLine = findViewById(R.id.find_position_line);
+        findPositionLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new BirthDayPicker(FindActivity.this, new BirthDayPicker.OnSelectListener() {
                     @Override
                     public void onDateSelect(String date) {
-                        findPosition(date);
+                        findPositionLine(date);
                     }
                 }).show();
             }
         });
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle("定位中");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
-        //获取地图控件引用
-
-        bitmap = BitmapDescriptorFactory.fromResource(R.drawable.current_location);
-
-        mMapView = findViewById(R.id.bmapView);
-
-        //获取BaiduMap对象
-        mBaiduMap = mMapView.getMap();
-        //声明LocationClient类，这里context考虑是否换成this
-        mLocationClient = new LocationClient(this);
-        //注册监听函数
-        mLocationClient.registerLocationListener(myListener);
-        //配置定位参数
-        initLocation();
-        //开始定位
-        mLocationClient.start();
-        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+        TextView findPositionPoint = findViewById(R.id.find_position_point);
+        findPositionPoint.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onMapStatusChangeStart(MapStatus mapStatus) {
-
-            }
-
-            @Override
-            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
-
-            }
-
-            @Override
-            public void onMapStatusChange(MapStatus mapStatus) {
-
-            }
-
-            @Override
-            public void onMapStatusChangeFinish(MapStatus mapStatus) {
-                Position mUploadPosition=new Position();
-                mUploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
-                mUploadPosition.setLocation(new BmobGeoPoint(mapStatus.target.longitude, mapStatus.target.latitude));
-                mUploadPosition.save(new SaveListener<String>() {
-                    @Override
-                    public void done(String objectId, BmobException e) {
-                        if (e == null) {
-                            Log.i(TAG, "upLoadPositionSucceed: ");
-                        } else {
-                            Log.i(TAG, "upLoadPositionFailed: ");
-                        }
-                    }
-                });
+            public void onClick(View v) {
+                findPositionPoint();
             }
         });
-        findPosition(null);
+        initBaiduMap();
+        initLocation();
+        findPositionPoint();
     }
 
-    private void findPosition(final String choose) {
-        //最终的查询条件
+    private void findPositionLine(final String choose) {
         BmobQuery<Position> query = new BmobQuery<>();
         query.addWhereEqualTo("user_id", BmobUser.getCurrentUser(User.class).getObjectId());
         query.findObjects(new FindListener<Position>() {
@@ -159,15 +111,35 @@ public class FindActivity extends Activity {
         });
     }
 
+    private void update() {
+
+    }
+
+    private void findPositionPoint() {
+        //最终的查询条件
+        BmobQuery<Position> query = new BmobQuery<>();
+        query.addWhereEqualTo("user_id", BmobUser.getCurrentUser(User.class).getObjectId());
+        query.findObjects(new FindListener<Position>() {
+            @Override
+            public void done(List<Position> list, BmobException e) {
+                if (list != null) {
+                    LatLng latLng = new LatLng(list.get(list.size() - 1).getLocation().getLatitude(), list.get(list.size() - 1).getLocation().getLongitude());
+                    setMarker(latLng);
+                }
+            }
+        });
+    }
+
     /**
-     * 添加marker
+     * 添加marker线
      */
     private void setMarker(List<LatLng> points) {
         mBaiduMap.clear();
         if (points == null || points.size() == 0) {
-            Toast.makeText(FindActivity.this, "该日期无记录", Toast.LENGTH_SHORT).show();
+            Toast.makeText(FindActivity.this, "该日期无定位记录", Toast.LENGTH_SHORT).show();
             return;
         }
+        setMapCenter(points.get(points.size() - 1));
         OverlayOptions mOverlayOptions = new PolylineOptions()
                 .width(10)
                 .color(0xAAFF0000)
@@ -176,13 +148,14 @@ public class FindActivity extends Activity {
         //定义Maker坐标点);
     }
 
-    /**
-     * 添加marker
-     */
-    private void setMarker(double lat, double lon) {
-        //定义Maker坐标点
-        LatLng point = new LatLng(lat, lon);
-        //构建Marker图标
+
+    private void setMarker(LatLng point) {
+        if (point == null) {
+            return;
+        }
+        Toast.makeText(FindActivity.this, "找到手机最近定位", Toast.LENGTH_SHORT).show();
+        mBaiduMap.clear();
+        setMapCenter(point);
         //构建MarkerOption，用于在地图上添加Marker
         OverlayOptions option = new MarkerOptions()
                 .position(point)
@@ -194,24 +167,68 @@ public class FindActivity extends Activity {
     /**
      * 设置中心点
      */
-    private void setUserMapCenter(double lat, double lon) {
-        LatLng center = new LatLng(lat, lon);
+    private void setMapCenter(LatLng point) {
         //定义地图状态
         MapStatus mMapStatus = new MapStatus.Builder()
-                .target(center)
+                .target(point)
                 .zoom(18)
                 .build();
         //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-        setMarker(lat, lon);
+    }
+
+    private void initBaiduMap() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("定位中");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+        mMapView = findViewById(R.id.bmapView);
+        mBaiduMap = mMapView.getMap();
+        //开始定位
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+//                Position mUploadPosition = new Position();
+//                mUploadPosition.setUser_id(BmobUser.getCurrentUser(User.class).getObjectId());
+//                mUploadPosition.setLocation(new BmobGeoPoint(mapStatus.target.longitude, mapStatus.target.latitude));
+//                mUploadPosition.save(new SaveListener<String>() {
+//                    @Override
+//                    public void done(String objectId, BmobException e) {
+//                        if (e == null) {
+//                            Log.i(TAG, "upLoadPositionSucceed: ");
+//                        } else {
+//                            Log.i(TAG, "upLoadPositionFailed: ");
+//                        }
+//                    }
+//                });
+            }
+        });
     }
 
     /**
      * 配置定位参数
      */
     private void initLocation() {
+        mLocationClient = new LocationClient(this);
+        //注册监听函数
+        mLocationClient.registerLocationListener(myListener);
         LocationClientOption option = new LocationClientOption();
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
         );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
@@ -227,6 +244,7 @@ public class FindActivity extends Activity {
         option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
         option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
         mLocationClient.setLocOption(option);
+        mLocationClient.start();
     }
 
     /**
@@ -239,7 +257,7 @@ public class FindActivity extends Activity {
         public void onReceiveLocation(BDLocation location) {
             //这个判断是为了防止每次定位都重新设置中心点和marker
             if (!init) {
-                setUserMapCenter(location.getLatitude(), location.getLongitude());
+//                setMapCenter(new LatLng(location.getLatitude(), location.getLongitude()));
                 mProgressDialog.dismiss();
                 init = true;
             }
