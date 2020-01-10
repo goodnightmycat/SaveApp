@@ -1,8 +1,6 @@
 package com.example.saveapp.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.example.saveapp.R;
 import com.example.saveapp.activity.FindActivity;
 import com.example.saveapp.activity.LockActivity;
+import com.example.saveapp.util.SharePreferenceUtil;
 import com.example.saveapp.view.PermissionDialog;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
@@ -27,6 +26,8 @@ import com.yanzhenjie.permission.runtime.Permission;
 
 import java.util.List;
 import java.util.Objects;
+
+import static com.example.saveapp.SharePreferenceKey.LOCK_PERMISSION;
 
 public class HomeFragment extends Fragment {
     private int startType;
@@ -94,21 +95,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getActivity() != null) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(key, Context.MODE_PRIVATE);
-            if (!sharedPreferences.getBoolean(key, false)) {
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences(key, Context.MODE_PRIVATE).edit();
-                editor.putBoolean(key, true);
-                editor.apply();
-                new PermissionDialog(getActivity(), new PermissionDialog.Listener() {
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    @Override
-                    public void onConfirm() {
-                        getAppDetailSettingIntent();
-                    }
-                }).show();
-            }
+        if (!SharePreferenceUtil.readBoolean(LOCK_PERMISSION, false)&&getActivity()!=null) {
+            new PermissionDialog(getActivity(), new PermissionDialog.Listener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onConfirm() {
+                    SharePreferenceUtil.write(LOCK_PERMISSION,true);
+                    getAppDetailSettingIntent();
+                }
+            }).show();
         }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
