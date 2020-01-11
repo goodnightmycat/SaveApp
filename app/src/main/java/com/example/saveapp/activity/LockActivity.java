@@ -143,17 +143,6 @@ public class LockActivity extends Activity implements SensorEventListener {
         assert audioManager != null;
         final int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);//获取最大音量值
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
-//        new CountDownTimer(Integer.MAX_VALUE, 2000) {
-//            @Override
-//            public void onTick(long l) {
-//                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//
-//            }
-//        }.start();
     }
 
     private void upLoadPosition(Position uploadPosition) {
@@ -187,11 +176,12 @@ public class LockActivity extends Activity implements SensorEventListener {
                     CURRENT_STEP++;
 //                    Toast.makeText(LockActivity.this, "移动次数" + CURRENT_STEP, Toast.LENGTH_LONG).show();
                     if (CURRENT_STEP >= 50 && !callPolice) {
+                        Toast.makeText(LockActivity.this, "开始报警", Toast.LENGTH_LONG).show();
                         callPolice();
                         mSensorManager.unregisterListener(this, sensor);
                     }
                     if (CURRENT_STEP >= 30) {
-//                        Toast.makeText(LockActivity.this, "请解除安全模式", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LockActivity.this, "请解除安全模式", Toast.LENGTH_LONG).show();
                     }
 
                 }
