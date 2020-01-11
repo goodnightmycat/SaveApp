@@ -34,7 +34,7 @@ public class SplashActivity extends Activity {
 
     private void initImage() {
 
-        mImgStart.setImageResource(R.drawable.ontime);
+        mImgStart.setImageResource(R.drawable.security);
 
         ScaleAnimation scaleAnimation = new ScaleAnimation(
                 0.85f,

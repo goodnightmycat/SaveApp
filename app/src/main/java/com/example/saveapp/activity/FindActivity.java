@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -37,8 +38,10 @@ import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 public class FindActivity extends Activity {
     private MapView mMapView;
@@ -141,7 +144,6 @@ public class FindActivity extends Activity {
         }
         setMapCenter(points.get(points.size() - 1));
         OverlayOptions mOverlayOptions = new PolylineOptions()
-                .width(10)
                 .color(0xAAFF0000)
                 .points(points);
         Overlay mPolyline = mBaiduMap.addOverlay(mOverlayOptions);
@@ -257,7 +259,7 @@ public class FindActivity extends Activity {
         public void onReceiveLocation(BDLocation location) {
             //这个判断是为了防止每次定位都重新设置中心点和marker
             if (!init) {
-//                setMapCenter(new LatLng(location.getLatitude(), location.getLongitude()));
+                setMapCenter(new LatLng(location.getLatitude(), location.getLongitude()));
                 mProgressDialog.dismiss();
                 init = true;
             }

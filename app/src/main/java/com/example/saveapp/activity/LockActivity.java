@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +63,7 @@ public class LockActivity extends Activity implements SensorEventListener {
     //用三个维度算出的平均值
     public static float average = 0;
     public boolean callPolice = false;
+    private ImageView police;
 
 
     public static void start(Context context) {
@@ -79,6 +81,7 @@ public class LockActivity extends Activity implements SensorEventListener {
         initCameraView();
         initLocation();
         password = findViewById(R.id.activity_lock_password);
+        police=findViewById(R.id.activity_lock_police);
         TextView cancel = findViewById(R.id.activity_lock_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,7 +221,7 @@ public class LockActivity extends Activity implements SensorEventListener {
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onReceiveLocation(BDLocation location) {
-            Log.i(TAG, "onReceiveLocation: ");
+            Log.i(TAG, "onReceiveLocation: "+location.getLatitude());
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
             if (callPolice && DistanceUtil.getDistance(oldPosition, position) > 10) {
                 oldPosition = new LatLng(location.getLatitude(), location.getLongitude());
@@ -247,18 +250,19 @@ public class LockActivity extends Activity implements SensorEventListener {
     }
 
     private void callPolice() {
+        police.setImageResource(R.drawable.police);
         SharePreferenceUtil.write(SharePreferenceKey.CALL_POLICE, true);
         callPolice = true;
-//        autoTakePhoto();
-//        maxVoice();
-//        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
-//        mediaPlayer.setLooping(true);
-//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(MediaPlayer mediaPlayer) {
-//                mediaPlayer.start();
-//            }
-//        });
+        autoTakePhoto();
+        maxVoice();
+        mediaPlayer = MediaPlayer.create(LockActivity.this, R.raw.police);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+            }
+        });
     }
 
     @Override

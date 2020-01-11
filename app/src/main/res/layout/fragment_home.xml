@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_bg"
     android:orientation="vertical">
     <TextView
         android:layout_marginTop="20dp"
@@ -27,7 +28,7 @@
         android:layout_height="50dp"
         android:id="@+id/fragment_home_grant"
         android:gravity="center_vertical"
-        android:text="获取屏锁显示权限"
+        android:text="获取权限"
         android:layout_marginLeft="15dp"
         android:textSize="24sp"/>
 </LinearLayout>
